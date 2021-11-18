@@ -47,15 +47,19 @@ fi
 [ ! -f "$gdm3Resource"~ ] && cp "$gdm3Resource" "$gdm3Resource~"
 
 # Check backup version, does it match with the os distro?
-chksum=$(sha256sum "$gdm3Resource~" | cut -d " " -f 1)
-declare -A hashtable=(
-	[Ubuntu_impish]="e85672d3cd5e1ef45e24d2a990971324b470d85279b6842225233141ac5f2807"
-	[Ubuntu_hirsute]="0a7427981087bf9eb48cc55e9ad3bce1d72235f151cf625415c350475ac25fc4"
-	[Pop_hirsute]="91de15c933229c1385de005cfe603b4e06c52134554542fb0442eadb9821b867"
-);
-if [[ "$chksum" != ${hashtable["${lsbRelease}_${distro}"]} ]]; then
+etcGdm=/etc/gdm-modifier.conf
+currentVersion="$(lsb_release -r | cut -f 2)"
+if [[ ! -f "$etcGdm" && -f "$gdm3Resource"~ ]]; then
+	echo "Is this script working fine previously? (y/n):"
+	read -p " " -n 1
+	if [[ "$REPLY" =~ ^[yY]$ ]]; then
+		echo "$currentVersion" > "$etcGdm"
+	fi
+fi
+etcGdmContent="$(head -1 "$etcGdm")"
+if [[ "$currentVersion" != "$etcGdmContent" ]]; then
 	echo "Force making new backup."
-	echo "${hashtable[$lsbRelease_$distro]}"
+	echo "$currentVersion" > "$etcGdm"
 	cp -f "$gdm3Resource" "$gdm3Resource~"
 fi
 
@@ -69,6 +73,7 @@ Restore () {
 		echo
 		if [[ "$REPLY" =~ ^[yY]$ ]]; then
 			service gdm restart
+			exit 0
 		else
 			echo "Restart GDM service to apply change."
 			exit 0
