@@ -43,13 +43,13 @@ if  [[ "$distro" == "impish" ]]; then
 	gdmCssDefault="$workDir"/theme/gdm.css
 fi
 
-# Create a backup file of the original theme if there isn't one.
-[ ! -f "$gdm3Resource"~ ] && cp "$gdm3Resource" "$gdm3Resource~"
-
 # Check backup version, does it match with the os distro?
 etcGdm=/etc/gdm-modifier.conf
 currentVersion="$(lsb_release -r | cut -f 2)"
-if [[ ! -f "$etcGdm" && -f "$gdm3Resource"~ ]]; then
+if [[ (! -f "$etcGdm") && (! -f "$gdm3Resource"~) ]]; then
+	echo "$currentVersion" > "$etcGdm"
+fi
+if [[ (! -f "$etcGdm") && -f "$gdm3Resource"~ ]]; then
 	echo "Is this script working fine previously? (y/n):"
 	read -p " " -n 1
 	if [[ "$REPLY" =~ ^[yY]$ ]]; then
@@ -57,12 +57,14 @@ if [[ ! -f "$etcGdm" && -f "$gdm3Resource"~ ]]; then
 	fi
 fi
 etcGdmContent="$(head -1 "$etcGdm")"
-if [[ "$currentVersion" != "$etcGdmContent" ]]; then
+if [[ "$currentVersion" != "$etcGdmContent" && -f "$gdm3Resource"~ ]]; then
 	echo "Force making new backup."
 	echo "$currentVersion" > "$etcGdm"
 	cp -f "$gdm3Resource" "$gdm3Resource~"
 fi
 
+# Create a backup file of the original theme if there isn't one.
+[ ! -f "$gdm3Resource"~ ] && cp "$gdm3Resource" "$gdm3Resource~"
 
 Restore () {
 	cp -f "$gdm3Resource~" "$gdm3Resource";
