@@ -249,7 +249,8 @@ sudo ./gdm-modifier.sh --dialog-font "#343434" "FreeMono"
 
 Note: If you're using HEX color, please put a backslash before the hash. E.g. \#343434
 EOF
-CleanUp;
+rm -r "$workDir";
+exit 2;
 fi;
 
 while (( "$#" )); do
