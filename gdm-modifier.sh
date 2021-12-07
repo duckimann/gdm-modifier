@@ -188,7 +188,7 @@ ValidatePhoto() {
 	else 
 		echo "";
 		echo "Photo $1 is not valid.";
-		exit 0;
+		exit 2;
 	fi
 }
 
@@ -198,7 +198,7 @@ ValidateColor() {
 	else
 		echo "";
 		echo "Color $1 is not valid."
-		exit 0;
+		exit 2;
 	fi
 	# if [[ "$(echo $1 | grep -Eo "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")" != "" ]]; then echo "$1"; fi
 	# if [[ "$(echo $1 | grep -Eo "rgba?\([0-9]+,\s?[0-9]+,\s?[0-9]+(,\s?(0\.)?[0-9]+)?\)")" != "" ]]; then echo "$1"; fi
